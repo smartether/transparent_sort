@@ -25,6 +25,8 @@ public class Transparent_Sort_Feature : MonoBehaviour {
 		// mask rolemodel stencil
 		cb.DrawMesh(RoleModel, roleModelMatrix, PrestencilMat, 0, 0);
 
+
+		MaterialPropertyBlock[] mpb = new MaterialPropertyBlock[layerRef.Length];
 		// draw faraest layer
 		for (int i = 0,c= layerRef.Length; i < c; i++)
 		{
@@ -32,8 +34,9 @@ public class Transparent_Sort_Feature : MonoBehaviour {
 			cb.DrawMesh(PlaneMesh, planeMeshMatrix, PrestencilMat, 0, 1);
 			// draw occlusion info
 			cb.DrawMesh(RoleModel, roleModelMatrix, PrestencilMat, 0, 2);
-			PrestencilMat.SetFloat("_DrawLayerRef", (float)layerRef[i]);
-			cb.DrawMesh(RoleModel, roleModelMatrix, PrestencilMat, 0, 3);
+			mpb[i].SetFloat("_DrawLayerRef", (float)layerRef[i]);
+			//PrestencilMat.SetFloat("_DrawLayerRef", (float)layerRef[i]);
+			cb.DrawMesh(RoleModel, roleModelMatrix, PrestencilMat, 0, 3, mpb[i]);
 		}
 
 		//// reset depth
