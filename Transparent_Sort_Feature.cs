@@ -26,17 +26,18 @@ public class Transparent_Sort_Feature : MonoBehaviour {
 		cb.DrawMesh(RoleModel, roleModelMatrix, PrestencilMat, 0, 0);
 
 
-		MaterialPropertyBlock[] mpb = new MaterialPropertyBlock[layerRef.Length];
+		Material[] mpb = new Material[layerRef.Length];
 		// draw faraest layer
 		for (int i = 0,c= layerRef.Length; i < c; i++)
 		{
-			// reset depth
-			cb.DrawMesh(PlaneMesh, planeMeshMatrix, PrestencilMat, 0, 1);
 			// draw occlusion info
 			cb.DrawMesh(RoleModel, roleModelMatrix, PrestencilMat, 0, 2);
+			// reset depth
+			cb.DrawMesh(PlaneMesh, planeMeshMatrix, PrestencilMat, 0, 1);
+
+			mpb[i] = new Material(PrestencilMat);
 			mpb[i].SetFloat("_DrawLayerRef", (float)layerRef[i]);
-			//PrestencilMat.SetFloat("_DrawLayerRef", (float)layerRef[i]);
-			cb.DrawMesh(RoleModel, roleModelMatrix, PrestencilMat, 0, 3, mpb[i]);
+			cb.DrawMesh(RoleModel, roleModelMatrix, mpb[i], 0, 3);
 		}
 
 		//// reset depth

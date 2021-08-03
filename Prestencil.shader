@@ -21,7 +21,7 @@
 				Fail Replace
 			}
             
-			ZWrite On
+			ZWrite Off
 			ZTest Less
 			ColorMask 0
 			Cull Off
@@ -71,7 +71,7 @@
 			Cull Off
 			stencil{
 				ref 8
-				comp Equal
+				comp LEqual
 				ReadMask 15
 				WriteMask 15
 				Pass Keep
@@ -129,7 +129,7 @@
 				WriteMask 15
 				Pass Keep
 				Fail Keep
-				ZFail Keep
+				ZFail IncrSat
 			}
 			CGPROGRAM
 			#pragma vertex vert
