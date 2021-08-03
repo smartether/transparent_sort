@@ -3,6 +3,7 @@
 	Properties
 	{
 		_MainTex ("Texture", 2D) = "white" {}
+		_DrawLayerRef("DrawLayerRef", int) = 8
 	}
 	SubShader
 	{
@@ -177,13 +178,13 @@
 			ColorMask RGB
 			Cull Off
 			stencil{
-				ref 8 // {8,9,10,11} iterator each overlay layer like CT
+				ref [_DrawLayerRef] // {8,9,10,11} iterator each overlay layer like CT
 				comp Equal
 				ReadMask 15
 				WriteMask 15
 				Pass Keep
-				Fail Keep
-				// ZFail IncrSat
+				Fail DecrSat
+				// ZFail Keep
 			}
 			CGPROGRAM
 			#pragma vertex vert

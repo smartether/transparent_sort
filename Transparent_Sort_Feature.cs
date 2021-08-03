@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 
 public class Transparent_Sort_Feature : MonoBehaviour {
-
+	
 	// Use this for initialization
 	void Start () {
 		cam = GetComponent<Camera>();
@@ -15,6 +15,7 @@ public class Transparent_Sort_Feature : MonoBehaviour {
 	public Mesh RoleModel;
 	public Mesh PlaneMesh;
 	public Material PrestencilMat;
+	public int[] layerRef;
 
 	CommandBuffer SetupCommandBuff()
     {
@@ -23,22 +24,26 @@ public class Transparent_Sort_Feature : MonoBehaviour {
 		CommandBuffer cb = new CommandBuffer();
 		// mask rolemodel stencil
 		cb.DrawMesh(RoleModel, roleModelMatrix, PrestencilMat, 0, 0);
-		// reset depth
-		cb.DrawMesh(PlaneMesh, planeMeshMatrix, PrestencilMat, 0, 1);
-
-		// draw occlusion info
-		cb.DrawMesh(RoleModel, roleModelMatrix, PrestencilMat, 0, 2);
 
 		// draw faraest layer
-		cb.DrawMesh(RoleModel, roleModelMatrix, PrestencilMat, 0, 3);
-		// reset depth
-		cb.DrawMesh(PlaneMesh, planeMeshMatrix, PrestencilMat, 0, 1);
-		// draw mid layer
-		cb.DrawMesh(RoleModel, roleModelMatrix, PrestencilMat, 0, 3);
-		// reset depth
-		cb.DrawMesh(PlaneMesh, planeMeshMatrix, PrestencilMat, 0, 1);
-		// draw nearest layer
-		cb.DrawMesh(RoleModel, roleModelMatrix, PrestencilMat, 0, 3);
+		for (int i = 0,c= layerRef.Length; i < c; i++)
+		{
+			// reset depth
+			cb.DrawMesh(PlaneMesh, planeMeshMatrix, PrestencilMat, 0, 1);
+			// draw occlusion info
+			cb.DrawMesh(RoleModel, roleModelMatrix, PrestencilMat, 0, 2);
+			PrestencilMat.SetFloat("_DrawLayerRef", (float)layerRef[i]);
+			cb.DrawMesh(RoleModel, roleModelMatrix, PrestencilMat, 0, 3);
+		}
+
+		//// reset depth
+		//cb.DrawMesh(PlaneMesh, planeMeshMatrix, PrestencilMat, 0, 1);
+		//// draw mid layer
+		//cb.DrawMesh(RoleModel, roleModelMatrix, PrestencilMat, 0, 3);
+		//// reset depth
+		//cb.DrawMesh(PlaneMesh, planeMeshMatrix, PrestencilMat, 0, 1);
+		//// draw nearest layer
+		//cb.DrawMesh(RoleModel, roleModelMatrix, PrestencilMat, 0, 3);
 
 		return cb;
 	}
