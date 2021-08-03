@@ -17,12 +17,12 @@
 				ReadMask 15
 				WriteMask 15
 				Pass Replace
-				Fail Keep
+				Fail Replace
 			}
             
 			ZWrite On
 			ZTest Less
-			ColorMask A
+			ColorMask 0
 			Cull Off
 			CGPROGRAM
 			#pragma vertex vert
@@ -64,7 +64,7 @@
 		Pass
 		{
 			Blend One Zero
-			ZWrite Off
+			ZWrite On
 			ZTest Always
 			ColorMask 0
 			Cull Off
@@ -102,14 +102,14 @@
 			{
 				v2f o;
 				o.vertex = UnityObjectToClipPos(v.vertex);
-				o.vertex.z = 1;
+				o.vertex.z = 1 * o.vertex.w;
 				o.uv = TRANSFORM_TEX(v.uv, _MainTex);
 				return o;
 			}
 			
 			fixed4 frag (v2f i) : SV_Target
 			{
-				return 0.5;
+				return 0;
 			}
 			ENDCG
 		}
@@ -128,7 +128,7 @@
 				WriteMask 15
 				Pass Keep
 				Fail Keep
-				ZFail IncrSat
+				ZFail Keep
 			}
 			CGPROGRAM
 			#pragma vertex vert
@@ -173,11 +173,11 @@
 		{
 			Blend SrcAlpha OneMinusSrcAlpha
 			ZWrite Off
-			ZTest Off
+			ZTest Less
 			ColorMask RGB
 			Cull Off
 			stencil{
-				ref 11 // {8,9,10,11} iterator each overlay layer like CT
+				ref 8 // {8,9,10,11} iterator each overlay layer like CT
 				comp Equal
 				ReadMask 15
 				WriteMask 15
@@ -218,7 +218,7 @@
 			{
 				// sample the texture
 				fixed4 col = tex2D(_MainTex, i.uv);
-				return 0.5;
+				return col;
 			}
 			ENDCG
 		}
