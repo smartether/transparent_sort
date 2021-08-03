@@ -27,7 +27,10 @@ public class Transparent_Sort_Feature : MonoBehaviour {
 
 
 		Material[] mpb = new Material[layerRef.Length];
-		// draw faraest layer
+		// draw opaque pass
+		cb.DrawMesh(RoleModel, roleModelMatrix, PrestencilMat, 0, 4);
+
+
 		for (int i = 0,c= layerRef.Length; i < c; i++)
 		{
 			// draw occlusion info
@@ -38,6 +41,9 @@ public class Transparent_Sort_Feature : MonoBehaviour {
 			mpb[i] = new Material(PrestencilMat);
 			mpb[i].SetFloat("_DrawLayerRef", (float)layerRef[i]);
 			cb.DrawMesh(RoleModel, roleModelMatrix, mpb[i], 0, 3);
+
+			// draw opaque pass restore depth
+			cb.DrawMesh(RoleModel, roleModelMatrix, PrestencilMat, 0, 5);
 		}
 
 		//// reset depth
