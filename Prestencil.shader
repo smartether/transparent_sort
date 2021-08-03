@@ -8,22 +8,21 @@
 	{
 		Tags { "RenderType"="Opaque" }
 		LOD 100
-
 		// mask object area
 		Pass
 		{
 			stencil{
 				ref 8
 				comp Always
-				ReadMask 16
-				WriteMask 16
+				ReadMask 15
+				WriteMask 15
 				Pass Replace
 				Fail Keep
 			}
             
 			ZWrite On
 			ZTest Less
-			ColorMask 0
+			ColorMask A
 			Cull Off
 			CGPROGRAM
 			#pragma vertex vert
@@ -56,7 +55,7 @@
 			
 			fixed4 frag (v2f i) : SV_Target
 			{
-				return 0;
+				return 0.2;
 			}
 			ENDCG
 		}
@@ -64,15 +63,16 @@
 		// reset object area depth
 		Pass
 		{
+			Blend One Zero
 			ZWrite Off
-			ZTest Off
+			ZTest Always
 			ColorMask 0
 			Cull Off
 			stencil{
 				ref 8
 				comp Equal
-				ReadMask 16
-				WriteMask 16
+				ReadMask 15
+				WriteMask 15
 				Pass Keep
 				Fail Keep
 				ZFail Keep
@@ -102,32 +102,32 @@
 			{
 				v2f o;
 				o.vertex = UnityObjectToClipPos(v.vertex);
-				o.vertex.z = 0;
+				o.vertex.z = 1;
 				o.uv = TRANSFORM_TEX(v.uv, _MainTex);
 				return o;
 			}
 			
 			fixed4 frag (v2f i) : SV_Target
 			{
-				return 0;
+				return 0.5;
 			}
 			ENDCG
 		}
 		
-		// farest plan
+		// draw occlusion info
 		Pass
 		{
-			ZWrite Off
-			ZTest On
+			ZWrite On
+			ZTest Less
 			ColorMask 0
 			Cull Off
 			stencil{
 				ref 8
-				comp GEqual
-				ReadMask 16
-				WriteMask 16
-				Pass Replace
-				// Fail IncrSat
+				comp LEqual
+				ReadMask 15
+				WriteMask 15
+				Pass Keep
+				Fail Keep
 				ZFail IncrSat
 			}
 			CGPROGRAM
@@ -163,25 +163,27 @@
 			{
 				// sample the texture
 				fixed4 col = tex2D(_MainTex, i.uv);
-				return col;
+				return 0.5;
 			}
 			ENDCG
 		}
 
-		// farest plan
+		// draw each layer
 		Pass
 		{
+			Blend SrcAlpha OneMinusSrcAlpha
 			ZWrite Off
-			ZTest On
-			ColorMask 0
+			ZTest Off
+			ColorMask RGB
 			Cull Off
 			stencil{
-				ref 8
+				ref 11 // {8,9,10,11} iterator each overlay layer like CT
 				comp Equal
-				ReadMask 16
-				WriteMask 16
-				Pass Replace
-				Fail IncrSat
+				ReadMask 15
+				WriteMask 15
+				Pass Keep
+				Fail Keep
+				// ZFail IncrSat
 			}
 			CGPROGRAM
 			#pragma vertex vert
@@ -216,65 +218,11 @@
 			{
 				// sample the texture
 				fixed4 col = tex2D(_MainTex, i.uv);
-				return col;
+				return 0.5;
 			}
 			ENDCG
 		}
 
-
-		// farest plan
-		Pass
-		{
-			ZWrite Off
-			ZTest On
-			ColorMask 0
-			Cull Off
-			stencil{
-				ref 8
-				comp Equal
-				ReadMask 16
-				WriteMask 16
-				Pass Replace
-				Fail IncrSat
-			}
-			CGPROGRAM
-			#pragma vertex vert
-			#pragma fragment frag
-			
-			#include "UnityCG.cginc"
-
-			struct appdata
-			{
-				float4 vertex : POSITION;
-				float2 uv : TEXCOORD0;
-			};
-
-			struct v2f
-			{
-				float2 uv : TEXCOORD0;
-				float4 vertex : SV_POSITION;
-			};
-
-			sampler2D _MainTex;
-			float4 _MainTex_ST;
-			
-			v2f vert (appdata v)
-			{
-				v2f o;
-				o.vertex = UnityObjectToClipPos(v.vertex);
-				o.uv = TRANSFORM_TEX(v.uv, _MainTex);
-				return o;
-			}
-			
-			fixed4 frag (v2f i) : SV_Target
-			{
-				// sample the texture
-				fixed4 col = tex2D(_MainTex, i.uv);
-				return col;
-			}
-			ENDCG
-		}
- 
 
 		// shader
 	}
