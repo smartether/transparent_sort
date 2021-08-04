@@ -106,7 +106,12 @@
 			{
 				v2f o;
 				o.vertex = UnityObjectToClipPos(v.vertex);
-				o.vertex.z = 1 * o.vertex.w;
+#if defined(SHADER_API_D3D11)
+				o.vertex.z = 0 * o.vertex.w;
+#elif defined(SHADER_API_GLES3) || defined(SHADER_API_MOBILE)
+
+				o.vertex.z = -1 * o.vertex.w;
+#endif
 				o.uv = TRANSFORM_TEX(v.uv, _MainTex);
 				return o;
 			}
