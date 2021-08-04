@@ -9,6 +9,7 @@
 	{
 		Tags { "RenderType"="Opaque" }
 		LOD 100
+
 		// mask object area
 		Pass
 		{
@@ -56,6 +57,8 @@
 			
 			fixed4 frag (v2f i) : SV_Target
 			{
+				//fixed4 col = tex2D(_MainTex, i.uv);
+				//clip(0.9699 - col.a);
 				return 0.2;
 			}
 			ENDCG
@@ -123,7 +126,7 @@
 			ColorMask 0
 			Cull Off
 			stencil{
-				ref 8
+				ref 8	// TO DO  limit max iterator depth 11(3 layer)
 				comp LEqual
 				ReadMask 15
 				WriteMask 15
@@ -184,9 +187,9 @@
 				comp Equal
 				ReadMask 15
 				WriteMask 15
-				Pass Keep
-				//Fail DecrSat
-				ZFail DecrSat
+				Pass DecrSat
+				Fail DecrSat
+				//ZFail DecrSat
 			}
 			CGPROGRAM
 			#pragma vertex vert
@@ -232,20 +235,11 @@
 		Pass
 		{
 			Tags { "RenderType"="Opaque" }
-			Blend One Zero
 			ZWrite On
 			ZTest Less
 			ColorMask RGBA
 			Cull Off
-			stencil{
-				ref [_DrawLayerRef] // {8,9,10,11} iterator each overlay layer like CT
-				comp Equal
-				ReadMask 15
-				WriteMask 15
-				Pass Keep
-				//Fail DecrSat
-				ZFail DecrSat
-			}
+
 			CGPROGRAM
 			#pragma vertex vert
 			#pragma fragment frag
@@ -296,15 +290,6 @@
 			ZTest Less
 			ColorMask 0
 			Cull Off
-			// stencil{
-			// 	ref [_DrawLayerRef] // {8,9,10,11} iterator each overlay layer like CT
-			// 	comp Equal
-			// 	ReadMask 15
-			// 	WriteMask 15
-			// 	Pass Keep
-			// 	//Fail DecrSat
-			// 	ZFail DecrSat
-			// }
 			CGPROGRAM
 			#pragma vertex vert
 			#pragma fragment frag
