@@ -182,7 +182,7 @@
 		Pass
 		{
 			Tags { "RenderType"="Transparent" }
-			Blend SrcAlpha OneMinusSrcAlpha
+			Blend  SrcAlpha  OneMinusSrcAlpha
 			ZWrite Off
 			ZTest Less
 			ColorMask RGBA
@@ -192,7 +192,7 @@
 				comp Equal
 				ReadMask 15
 				WriteMask 15
-				Pass DecrSat
+				Pass Keep
 				Fail DecrSat
 				//ZFail DecrSat
 			}
